@@ -1,0 +1,69 @@
+pipeline{
+    environment{
+        STOP = "docker stop \$(docker ps -a -q)"
+        PRUNE = "docker system prune -a --volumes -f"
+        PULL = "docker pull maximus7022/laravel-app:1.${BUILD_NUMBER}"
+        RUN = "docker run -d -p 80:5000 --name laravel_app maximus7022/laravel-app:1.${BUILD_NUMBER}"
+    }
+    agent any
+    stages{
+        stage("Building image"){
+            steps{
+                echo "Building app image..."
+                sh "docker build -t maximus7022/laravel-app:1.${BUILD_NUMBER} ."
+                echo "OK"
+            }
+        }
+        stage("DockerHub Authentication"){
+            steps{
+                echo "Logging to DockerHub..."
+                withCredentials([usernamePassword(credentialsId: 'DockerHub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''docker login -u $USERNAME -p $PASSWORD'''
+                }
+                echo "OK"
+            }
+        }
+        stage("Publishing to DockerHub"){
+            steps{
+                echo "Pushing to DockerHub..."
+                sh "docker push maximus7022/laravel-app:1.${BUILD_NUMBER}"
+                echo "OK"
+            }
+        }
+        stage("Cleaning build environment"){
+            steps{
+                echo "Removing unused images..."
+                sh "docker system prune -a --volumes -f"
+                echo "OK"
+            }
+        }
+        stage("Cleaning production environment"){
+            steps{
+                echo "Removing old containers and images..."
+                withCredentials([
+                    string(credentialsId: 'laravel_production_user', variable: 'PROD_USER'),
+                    string(credentialsId: 'laravel_production_ip', variable: 'PROD_IP')
+                ]){
+                    sshagent(['production_key']) {
+                        sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${STOP}'"
+                        sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${PRUNE}'"
+                    }
+                }
+            }
+        }
+        stage("Remote project deployment"){
+            steps{
+                echo "Pulling image and running container..."
+                withCredentials([
+                    string(credentialsId: 'laravel_production_user', variable: 'PROD_USER'),
+                    string(credentialsId: 'laravel_production_ip', variable: 'PROD_IP')
+                ]){
+                    sshagent(['production_key']) {
+                        sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${PULL}'"
+                        sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${RUN}'"
+                    }
+                }
+            }
+        }
+    }
+}
