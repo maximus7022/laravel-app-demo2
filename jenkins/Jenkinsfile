@@ -1,16 +1,17 @@
 pipeline{
     environment{
-        STOP = "docker stop \$(docker ps -a -q)"
-        PRUNE = "docker system prune -a --volumes -f"
-        PULL = "docker pull maximus7022/laravel-app:1.${BUILD_NUMBER}"
-        RUN = "docker run -d -p 80:5000 --name laravel_app maximus7022/laravel-app:v.${BUILD_NUMBER}"
+        // STOP = "docker stop \$(docker ps -a -q)"
+        // PRUNE = "docker system prune -a --volumes -f"
+        // PULL = "docker pull maximus7022/laravel-app:1.${BUILD_NUMBER}"
+        // RUN = "docker run -d -p 80:5000 --name laravel_app maximus7022/laravel-app:v.${BUILD_NUMBER}"
+        registry = "798653922524.dkr.ecr.eu-north-1.amazonaws.com/laravel-app"
     }
     agent any
     stages{
         stage("Building image"){
             steps{
                 echo "Building app image..."
-                sh "docker build -t 798653922524.dkr.ecr.eu-north-1.amazonaws.com/laravel-app:v.${BUILD_NUMBER} ."
+                sh "docker build -t ${registry} ."
                 echo "--------------------------OK--------------------------"
             }
         }
@@ -24,7 +25,9 @@ pipeline{
         stage("Pushing to ECR"){
             steps{
                 echo "Pushing to ECR..."
-                sh "docker push 798653922524.dkr.ecr.eu-north-1.amazonaws.com/laravel-app:v.${BUILD_NUMBER}"
+                sh "docker push ${registry}"
+                sh "docker tag ${registry} ${registry}:v.${BUILD_NUMBER}"
+                sh "docker push ${registry}:v.${BUILD_NUMBER}"
                 echo "--------------------------OK--------------------------"
             }
         }
