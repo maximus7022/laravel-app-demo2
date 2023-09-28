@@ -11,7 +11,7 @@
 <body>
     <section class="showcase">
         <header>
-            <h2 class="logo">John Jones</h2>
+            <h2 class="logo">Maxim Pashynskyi's</h2>
             <div class="toggle"></div>
         </header>
         <video src="{{asset('video/bg.mp4')}}" muted loop autoplay></video>
@@ -27,6 +27,7 @@
     </section>
     <div class="menu">
         <ul>
+            <li><a href="/students">SQL CRUID App</a></li>
             <li><a href="/drum">Drum Kit</a></li>
             <li><a href="/dicee">Dicee Game</a></li>
             <li><a href="/colors">Color Generator</a></li>
