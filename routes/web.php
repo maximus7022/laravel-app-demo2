@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,3 +33,7 @@ Route::get('/calc', function () { //
 Route::get('/colors', function () { //
 	return view('colors');
 });
+
+// Route::get('/db', [DbController::class, 'index']);
+
+Route::resource('students', StudentController::class);
