@@ -8,9 +8,7 @@ COPY . .
 # updating and installing composer
 RUN apk update && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    composer install --prefer-dist --no-dev -o && \
-    docker-php-ext-install pdo pdo_mysql && \
-    docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+    composer install --prefer-dist --no-dev -o
 
 # generating new project key
 RUN cp .env.example .env && \
