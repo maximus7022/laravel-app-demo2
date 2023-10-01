@@ -1,9 +1,5 @@
 pipeline{
     environment{
-        // STOP = "docker stop \$(docker ps -a -q)"
-        // PRUNE = "docker system prune -a --volumes -f"
-        // PULL = "docker pull maximus7022/laravel-app:1.${BUILD_NUMBER}"
-        // RUN = "docker run -d -p 80:5000 --name laravel_app maximus7022/laravel-app:v.${BUILD_NUMBER}"
         registry = "798653922524.dkr.ecr.eu-north-1.amazonaws.com/laravel-app-ecr-repo"
     }
     agent any
@@ -38,33 +34,17 @@ pipeline{
                 echo "--------------------------OK--------------------------"
             }
         }
-        // stage("Cleaning production environment"){
-        //     steps{
-        //         echo "Removing old containers and images..."
-        //         withCredentials([
-        //             string(credentialsId: 'laravel_production_user', variable: 'PROD_USER'),
-        //             string(credentialsId: 'laravel_production_ip', variable: 'PROD_IP')
-        //         ]){
-        //             sshagent(['production_key']) {
-        //                 sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${STOP}'"
-        //                 sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${PRUNE}'"
-        //             }
-        //         }
-        //     }
-        // }
-        // stage("Remote project deployment"){
-        //     steps{
-        //         echo "Pulling image and running container..."
-        //         withCredentials([
-        //             string(credentialsId: 'laravel_production_user', variable: 'PROD_USER'),
-        //             string(credentialsId: 'laravel_production_ip', variable: 'PROD_IP')
-        //         ]){
-        //             sshagent(['production_key']) {
-        //                 sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${PULL}'"
-        //                 sh "ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_IP} '${RUN}'"
-        //             }
-        //         }
-        //     }
-        // }
+        stage("Deployment to ECS"){
+            steps{
+                echo "Updating ECS service with new image version..."
+                withCredentials([
+                    string(credentialsId: 'ecs_cluster_name', variable: 'CLUSTER_NAME'),
+                    string(credentialsId: 'ecs_service_name', variable: 'SERVICE_NAME')
+                ]){
+                    sh "aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --force-new-deployment"
+                }
+                echo "--------------------------OK--------------------------"
+            }
+        }
     }
 }
