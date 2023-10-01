@@ -41,7 +41,8 @@ pipeline{
                     string(credentialsId: 'ecs_cluster_name', variable: 'CLUSTER_NAME'),
                     string(credentialsId: 'ecs_service_name', variable: 'SERVICE_NAME')
                 ]){
-                    sh '''aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment'''
+                    sh "aws ecs describe-services --services --cluster --region"
+                    // sh '''aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment'''
                 }
                 echo "--------------------------OK--------------------------"
             }
