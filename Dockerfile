@@ -13,7 +13,7 @@ RUN apk update && \
 # generating new project key
 RUN cp .env.example .env && \
     php artisan key:generate && \
-    php artisan migrate
+    php artisan migrate --force
 
 EXPOSE 5000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=5000"]
