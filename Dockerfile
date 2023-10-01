@@ -16,5 +16,7 @@ RUN apk update && \
 RUN cp .env.example .env && \
     php artisan key:generate
 
+RUN ["chmod", "+x", "./startup.sh"]
+
 EXPOSE 5000
 CMD ["/bin/bash","-c","./startup.sh"]
