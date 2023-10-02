@@ -10,6 +10,7 @@ pipeline{
                 sh 'echo "DB_DATABASE=$(aws secretsmanager get-secret-value --secret-id rds-database-1 --query SecretString --output text)" >> .env.example'
                 sh 'echo "DB_USERNAME=$(aws secretsmanager get-secret-value --secret-id rds-username-1 --query SecretString --output text)" >> .env.example'
                 sh 'echo "DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id rds-password-1 --query SecretString --output text)" >> .env.example'
+                sh 'cat .env.example'
             }
         }
         stage("Building image"){
