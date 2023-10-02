@@ -5,7 +5,7 @@ WORKDIR /var/www/html/
 # copying project to workdir
 COPY . .
 
-# RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # updating and installing composer
 RUN apk update && \
