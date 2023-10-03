@@ -6,11 +6,12 @@ pipeline{
     stages{
         stage("Retrieving RDS credentials for container"){
             steps{
+                echo "Writing DB secrets to env..."
                 sh 'echo "DB_HOST=$(aws secretsmanager get-secret-value --secret-id rds-host-1 --query SecretString --output text)" >> .env.example'
                 sh 'echo "DB_DATABASE=$(aws secretsmanager get-secret-value --secret-id rds-database-1 --query SecretString --output text)" >> .env.example'
                 sh 'echo "DB_USERNAME=$(aws secretsmanager get-secret-value --secret-id rds-username-1 --query SecretString --output text)" >> .env.example'
                 sh 'echo "DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id rds-password-1 --query SecretString --output text)" >> .env.example'
-                sh 'cat .env.example'
+                echo "--------------------------OK--------------------------"
             }
         }
         stage("Building image"){
