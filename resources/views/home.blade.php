@@ -21,7 +21,7 @@
             <h3>Second Demo Project</h3>
             <p>Here, I've combined several simple web applications
             into one Laravel project and automated the process of building
-            and deploying it using Jenkins and Docker.</p>
+            and deploying it using Jenkins and Docker. Also I created AWS infrastructure with Terraform</p>
             <a class="expl" href="#">Explore projects</a>
         </div>
     </section>
